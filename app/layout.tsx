@@ -9,6 +9,7 @@ import { siteConfig } from "@/config/site"
 import ActiveSectionIndicator from "@/components/active-section-indicator"
 import MobileNav from "@/components/mobile-nav"
 import ResumeButton from "@/components/resume-button"
+import MusicPlayer from "@/components/music-player"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,7 +30,7 @@ export default function RootLayout({
         className={`${inter.className} bg-white dark:bg-black text-black dark:text-white min-h-screen flex flex-col`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <header className="border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white dark:bg-black z-10">
+          <header className="sticky top-0 z-10 w-full bg-white/80 backdrop-blur-sm dark:bg-black/80">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
               <Link href="/" className="font-medium">
                 {siteConfig.name}
@@ -68,6 +69,7 @@ export default function RootLayout({
           </header>
           <ActiveSectionIndicator />
           <div className="flex-1">{children}</div>
+          <MusicPlayer src="/music/background-music.mp3" />
         </ThemeProvider>
       </body>
     </html>
