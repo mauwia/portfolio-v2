@@ -53,9 +53,15 @@ export default function ScrollToTop() {
 
   return (
     <div
-      className={`fixed bottom-6 right-6 transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      className={`fixed bottom-6 right-20 transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
     >
-      <Button onClick={scrollToTop} size="icon" className="rounded-full shadow-lg" aria-label="Scroll to top">
+      <Button 
+        onClick={scrollToTop} 
+        variant="outline"
+        size="icon" 
+        className="rounded-full shadow-lg bg-background/80 backdrop-blur-sm hover:bg-accent" 
+        aria-label="Scroll to top"
+      >
         <ChevronUp className="h-5 w-5" />
       </Button>
     </div>

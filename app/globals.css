@@ -237,3 +237,47 @@ a.underline:hover::after {
   transform: scaleX(1.05);
   transform-origin: bottom left;
 }
+
+/* Star animations */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* REMOVE OR COMMENT OUT THE SHOOTING STAR STYLES BELOW */
+/* 
+.shooting-star {
+  position: absolute;
+  height: 2px;
+  width: var(--star-length, 100px);
+  animation: shooting-star var(--star-speed, 1s) linear forwards;
+}
+
+@keyframes shooting-star {
+  0% {
+    transform-origin: left;
+    transform: translateX(0) translateY(0) rotate(var(--star-angle, -30deg)) scaleX(0);
+    opacity: 0;
+  }
+  5% {
+    transform-origin: left;
+    transform: translateX(0) translateY(0) rotate(var(--star-angle, -30deg)) scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform-origin: left;
+    transform: translateX(calc(var(--star-length, 100px) * 2))
+               translateY(calc(var(--star-length, 100px) * 0.5))
+               rotate(var(--star-angle, -30deg))
+               scaleX(0);
+    opacity: 0;
+  }
+}
+*/

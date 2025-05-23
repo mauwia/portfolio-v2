@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Muhammad Mavia",
-  title: "hi, i'm Mavia.",
+  title: "Hi, I'm Mavia.",
   description: "i build things on the internet.",
   resume: {
     label: "Resume",

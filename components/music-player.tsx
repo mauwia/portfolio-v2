@@ -9,7 +9,7 @@ interface MusicPlayerProps {
 }
 
 export default function MusicPlayer({ src }: MusicPlayerProps) {
-  const [isMuted, setIsMuted] = useState(true); // Start muted by default
+  const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -19,7 +19,7 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
     const audio = new Audio(src);
     audio.loop = true;
     audio.volume = 0.4;
-    audio.currentTime=39
+    audio.currentTime = 39;
     audioRef.current = audio;
 
     // Load user preference from localStorage if available
@@ -64,7 +64,7 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
 
     audio.muted = isMuted;
 
-    // If unmuting and not already playing, try to play
+    // If unmuting and not already playing, try to play when unmuting
     if (!isMuted && !isPlaying && hasInteracted) {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
@@ -103,17 +103,12 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
     setIsMuted(!isMuted);
   };
 
-  // Visual styling based on playback state
-  const buttonClasses = `h-10 w-10 rounded-full shadow-lg backdrop-blur-sm hover:bg-accent transition-all duration-300 ${
-    isPlaying && !isMuted ? "bg-accent/80" : "bg-background/80"
-  } ${!isPlaying && !hasInteracted ? "animate-pulse" : ""}`;
-
   return (
     <div className="fixed bottom-6 right-6 z-50">
       <Button
         variant="outline"
         size="icon"
-        className={buttonClasses}
+        className="h-10 w-10 rounded-full shadow-lg bg-background/80 backdrop-blur-sm hover:bg-accent"
         onClick={toggleMute}
         aria-label={isMuted ? "Unmute music" : "Mute music"}
       >

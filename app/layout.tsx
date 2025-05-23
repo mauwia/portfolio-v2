@@ -10,6 +10,7 @@ import ActiveSectionIndicator from "@/components/active-section-indicator"
 import MobileNav from "@/components/mobile-nav"
 import ResumeButton from "@/components/resume-button"
 import MusicPlayer from "@/components/music-player"
+import StarryBackground from "@/components/starry-background"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         className={`${inter.className} bg-white dark:bg-black text-black dark:text-white min-h-screen flex flex-col`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <StarryBackground />
           <header className="sticky top-0 z-10 w-full bg-white/80 backdrop-blur-sm dark:bg-black/80">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
               <Link href="/" className="font-medium">
@@ -61,7 +63,7 @@ export default function RootLayout({
                 </nav>
                 <div className="flex items-center gap-3">
                   <ResumeButton />
-                  <ThemeToggle />
+                  {/* <ThemeToggle /> */}
                   <MobileNav />
                 </div>
               </div>
