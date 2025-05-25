@@ -95,6 +95,26 @@ body {
   }
 }
 
+@keyframes spaceship-move {
+  0% {
+    transform: translate(0, 0) rotate(var(--angle)) var(--flip);
+  }
+  100% {
+    transform: translate(var(--distance-x), var(--distance-y)) rotate(var(--angle)) var(--flip);
+  }
+}
+
+/* Subtle pulse animation for spaceships */
+@keyframes spaceship-pulse {
+  0%,
+  100% {
+    opacity: var(--base-opacity);
+  }
+  50% {
+    opacity: calc(var(--base-opacity) * 1.3);
+  }
+}
+
 .animate-text-shimmer {
   background: linear-gradient(
     to right,
