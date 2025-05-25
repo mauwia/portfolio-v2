@@ -19,7 +19,7 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
     const audio = new Audio(src);
     audio.loop = true;
     audio.volume = 0.4;
-    audio.currentTime = 39;
+    audio.currentTime = 130;
     audioRef.current = audio;
 
     // Load user preference from localStorage if available
