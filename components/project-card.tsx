@@ -55,105 +55,89 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <div
       ref={cardRef}
-      className="relative p-6 rounded-lg border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-lg"
+      className="relative p-8 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-500 group overflow-hidden"
       style={{
         transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-        transition: isHovered
-          ? "transform 0.1s ease-out"
-          : "transform 0.5s ease-out",
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="flex items-start gap-4">
+      {/* Dynamic Hover Gradient inside card */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: `radial-gradient(800px circle at ${rotation.y * -20 + 50}% ${rotation.x * -20 + 50}%, rgba(255,114,37,0.1) 0%, transparent 40%)`
+        }}
+      />
+
+      <div className="flex flex-col md:flex-row gap-6 relative z-10">
         <div
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition-transform duration-300 ${
-            isHovered ? "scale-110" : ""
+          className={`w-16 h-16 rounded-2xl flex-shrink-0 flex items-center justify-center transition-transform duration-500 overflow-hidden bg-white/5 border border-white/10 ${
+            isHovered ? "scale-105 border-primary/50 shadow-[0_0_15px_rgba(255,114,37,0.3)]" : ""
           }`}
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255,255,255,0.18)",
-          }}
         >
-          {/* <span className="text-xl font-bold">{project.icon}</span>
-           */}
           {project.icon.length === 1 ? (
-            <span className="text-xl font-bold">{project.icon}</span>
+            <span className="text-3xl font-black text-white">{project.icon}</span>
           ) : (
             <img
               src={project.icon}
               alt={project.name}
-              className={`w-10 h-10 ${project.name.toLowerCase() === "tars" ? "object-contain dark:invert" : "rounded-full"}`}
-              style={{
-                borderRadius: project.name.toLowerCase() === "tars" ? "0" : "50%",
-                padding: "2px",
-              }}
+              className={`w-full h-full object-cover ${project.name.toLowerCase() === "tars" ? "object-contain p-2 dark:invert" : ""}`}
             />
           )}
         </div>
 
-        <div className="space-y-3 flex-1">
+        <div className="space-y-4 flex-1">
           <div className="flex justify-between items-start">
             <Link
               href={project.url}
-              className="font-medium text-lg hover:underline flex items-center gap-1 group"
+              className="font-bold text-2xl text-white hover:text-primary transition-colors flex items-center gap-2 group/link"
             >
-              {project.name}{" "}
-              <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              {project.name}
+              <ArrowUpRight className="w-5 h-5 opacity-50 group-hover/link:opacity-100 transition-all group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
             </Link>
 
             {project.featured && (
-              <Badge variant="outline" className="bg-black/5 dark:bg-white/10">
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
                 Featured
               </Badge>
             )}
           </div>
 
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-400 font-light leading-relaxed">
             {project.description}
           </p>
 
-          {project.longDescription?.length &&
-            project.longDescription.map((line, index) => (
-              <p
-                key={index}
-                className="text-gray-600 dark:text-gray-400 text-sm"
-              >
-                - {line}
-              </p>
-            ))}
+          {project.longDescription?.length && (
+            <div className="space-y-2 pt-2">
+              {project.longDescription.map((line, index) => (
+                <p
+                  key={index}
+                  className="text-gray-500 text-sm flex items-start gap-2"
+                >
+                  <span className="text-primary/50 mt-0.5">▹</span> {line}
+                </p>
+              ))}
+            </div>
+          )}
 
           {project.technologies && (
-            <div className="flex flex-wrap gap-2 pt-2">
+            <div className="flex flex-wrap gap-2 pt-4">
               {project.technologies.map((tech) => (
-                <Badge key={tech} variant="secondary" className="text-xs">
+                <Badge key={tech} variant="secondary" className="bg-white/5 text-gray-300 border-none hover:bg-white/10 transition-colors">
                   {tech}
                 </Badge>
               ))}
             </div>
           )}
 
-          <div className="flex justify-between items-center pt-2 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex justify-between items-center pt-4 text-xs font-mono text-gray-600 tracking-widest uppercase">
             {project.status && <span>{project.status}</span>}
             {project.timeline && <span>{project.timeline}</span>}
           </div>
         </div>
       </div>
-
-      {/* Hover glow effect */}
-      {isHovered && (
-        <div
-          className="absolute inset-0 -z-10 rounded-lg opacity-30 blur-xl"
-          style={{
-            background: `radial-gradient(circle at ${rotation.y * -10 + 50}% ${
-              rotation.x * -10 + 50
-            }%, rgba(255,255,255,0.8) 0%, transparent 70%)`,
-          }}
-        />
-      )}
     </div>
   );
 }
