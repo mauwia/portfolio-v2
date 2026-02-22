@@ -73,6 +73,32 @@ export const siteConfig = {
   ],
   projects: [
     {
+      name: "Cooking-Ai-Journal",
+      description:
+        "An AI-powered crypto trading terminal integrated with Hyperliquid that provides smart pre-trade and post-trade analysis. Built for traders who want actionable market insights alongside fast, seamless trade execution.",
+      longDescription: [
+        "Engineered core data ingestion pipelines tracking perpetual market data from dYdX and HyperLiquid APIs for AI training models.",
+        "Optimized database queries to efficiently calculate trader net positions and historical PnL.",
+        "Expanded API endpoints to dynamically support multi-coin queries and complex date window filtering.",
+      ],
+      url: "https://cooking.gg/",
+      icon: "cooking.jpg",
+      color: "",
+    },
+    {
+      name: "Tars",
+      description:
+        "A Solana-based platform for deploying and monetizing Al agents, built on industry-standard and proprietary frameworks for scalability and performance.",
+      longDescription: [
+        "Built an autonomous AI agent that deploys and manages tokens on pump.fun with minimal human intervention.",
+        "Integrated Discord and Twitter automation to handle community building, engagement, and moderation at scale",
+        "Deployed the agent on Tars AI Market, combining on-chain token operations with social media management into a single workflow.",
+      ],
+      url: "https://tars.pro/",
+      icon: "tars.svg",
+      color: "",
+    },
+    {
       name: "Coin Terminal",
       description:
         "Coin Terminal is a leading crypto launchpad with a 15.95% average ROI, connecting over 0.5M investors to innovative projects",
@@ -146,19 +172,20 @@ export const siteConfig = {
     {
       company: "Drox",
       position: "Backend Engineer",
-      duration: "2024 - Present",
+      duration: "January 2024 - Present",
       description: [
         "Excelled in delivering high-quality solutions on Launchpad, serving almost 500k users.",
         "Implemented MultiChain Account Abstraction in the wallet server.",
         "Try to introduce LLMs Model to Blockchain world",
         "Created a custom indexer for evm blockchains",
+        "Aggregated data from multiple trading platforms to train and optimize AI-driven trading models.",
       ],
       url: "https://www.droxlabs.com/",
     },
     {
       company: "Artfi",
       position: "Backend Engineer",
-      duration: "2023 - 2023",
+      duration: "May 2023 - November 2023",
       description: [
         "Designed and architected server infrastructure.",
         "Collaborated with other team members to design and implement new features.",
@@ -171,7 +198,7 @@ export const siteConfig = {
     {
       company: "BlockApex (Part-time)",
       position: "Backend Engineer",
-      duration: "2023 - 2023",
+      duration: "May 2023 - December 2023",
       description: [
         "Worked on Decentralized Exchange Implementing partial and full using price-time priority algorithm",
       ],
@@ -180,7 +207,7 @@ export const siteConfig = {
     {
       company: "Xord",
       position: "Full Stack Engineer",
-      duration: "2020 - 2023",
+      duration: "October 2020 - April 2023",
       description: [
         "Excel in implementing high-quality solutions across diverse projects, including NFTs, staking, Web3 Wallets, flash loans, bridges, and crypto lending/borrowing platforms.",
         "Gained experience working with several well-known blockchains, which include EVM, Solana, Near, and Concordium.",

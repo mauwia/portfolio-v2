@@ -86,10 +86,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <img
               src={project.icon}
               alt={project.name}
-              className="w-10 h-10 rounded-full"
+              className={`w-10 h-10 ${project.name.toLowerCase() === "tars" ? "object-contain dark:invert" : "rounded-full"}`}
               style={{
-                // backgroundColor: project.color,
-                borderRadius: "50%",
+                borderRadius: project.name.toLowerCase() === "tars" ? "0" : "50%",
                 padding: "2px",
               }}
             />
