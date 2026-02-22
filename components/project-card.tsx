@@ -83,7 +83,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <img
               src={project.icon}
               alt={project.name}
-              className={`w-full h-full object-cover ${project.name.toLowerCase() === "tars" ? "object-contain p-2 dark:invert" : ""}`}
+              className={`w-full h-full object-cover ${project.name.toLowerCase() === "tars" ? "object-contain p-2 invert brightness-100" : ""}`}
             />
           )}
         </div>
