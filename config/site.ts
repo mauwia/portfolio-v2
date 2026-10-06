@@ -74,55 +74,6 @@ export const siteConfig = {
   ],
   projects: [
     {
-      name: "shiftleft-arc",
-      description:
-        "Security architecture review as code. Describe a system in YAML and get a STRIDE threat model, risk scores on a likelihood/impact matrix, a security concept report and a CI/CD policy gate.",
-      longDescription: [
-        "26 architecture control checks, each mapped to CWE and the OWASP Top 10.",
-        "Formal risk acceptance with a named approver and an expiry date, after which the finding is enforced again.",
-        "Python, one runtime dependency, 157 tests.",
-      ],
-      url: "https://github.com/mauwia/shiftleft-arc",
-      icon: "S",
-      color: "",
-    },
-    {
-      name: "Jaint",
-      description:
-        "Static taint analyzer for Java bytecode. Finds SQL injection, command injection and path traversal directly in a .jar through Soot dataflow analysis.",
-      longDescription: [
-        "Forward taint analysis over Soot's Jimple IR with fixed-point convergence on control-flow graphs.",
-        "Runs as a Spring Boot REST API or a CLI, with JSON and SARIF output.",
-      ],
-      url: "https://github.com/mauwia/Jaint",
-      icon: "J",
-      color: "",
-    },
-    {
-      name: "harmonia-iam",
-      description:
-        "Multi-tenant OAuth2/OIDC platform: one identity service issuing tenant-scoped JWTs, and a resource server on top of it.",
-      longDescription: [
-        "Kotlin, Spring Boot 3 and Spring Authorization Server, with PostgreSQL, Flyway and Testcontainers.",
-        "Every request is scoped to the tenant in the validated token; a missing tenant claim is refused.",
-      ],
-      url: "https://github.com/mauwia/harmonia-iam",
-      icon: "H",
-      color: "",
-    },
-    {
-      name: "SolarCraft AI",
-      description:
-        "Planning tool for solar PV and heat-pump installers, from a customer address to a priced proposal in one workflow.",
-      longDescription: [
-        "Satellite roof scanner, 12-month yield simulation and an automated bill-of-materials and quote builder.",
-        "AI copilot for German feed-in tariffs, VAT rules and 25-year ROI.",
-      ],
-      url: "https://github.com/mauwia/solarcraft-ai",
-      icon: "☀",
-      color: "",
-    },
-    {
       name: "Cooking-Ai-Journal",
       description:
         "An AI-powered crypto trading terminal integrated with Hyperliquid that provides smart pre-trade and post-trade analysis. Built for traders who want actionable market insights alongside fast, seamless trade execution.",
@@ -216,6 +167,55 @@ export const siteConfig = {
       icon: "artfi.jpg",
       color: "green",
       // featured: false,
+    },
+    {
+      name: "shiftleft-arc",
+      description:
+        "Security architecture review as code. Describe a system in YAML and get a STRIDE threat model, risk scores on a likelihood/impact matrix, a security concept report and a CI/CD policy gate.",
+      longDescription: [
+        "26 architecture control checks, each mapped to CWE and the OWASP Top 10.",
+        "Formal risk acceptance with a named approver and an expiry date, after which the finding is enforced again.",
+        "Python, one runtime dependency, 157 tests.",
+      ],
+      url: "https://github.com/mauwia/shiftleft-arc",
+      icon: "S",
+      color: "",
+    },
+    {
+      name: "Jaint",
+      description:
+        "Static taint analyzer for Java bytecode. Finds SQL injection, command injection and path traversal directly in a .jar through Soot dataflow analysis.",
+      longDescription: [
+        "Forward taint analysis over Soot's Jimple IR with fixed-point convergence on control-flow graphs.",
+        "Runs as a Spring Boot REST API or a CLI, with JSON and SARIF output.",
+      ],
+      url: "https://github.com/mauwia/Jaint",
+      icon: "J",
+      color: "",
+    },
+    {
+      name: "harmonia-iam",
+      description:
+        "Multi-tenant OAuth2/OIDC platform: one identity service issuing tenant-scoped JWTs, and a resource server on top of it.",
+      longDescription: [
+        "Kotlin, Spring Boot 3 and Spring Authorization Server, with PostgreSQL, Flyway and Testcontainers.",
+        "Every request is scoped to the tenant in the validated token; a missing tenant claim is refused.",
+      ],
+      url: "https://github.com/mauwia/harmonia-iam",
+      icon: "H",
+      color: "",
+    },
+    {
+      name: "SolarCraft AI",
+      description:
+        "Planning tool for solar PV and heat-pump installers, from a customer address to a priced proposal in one workflow.",
+      longDescription: [
+        "Satellite roof scanner, 12-month yield simulation and an automated bill-of-materials and quote builder.",
+        "AI copilot for German feed-in tariffs, VAT rules and 25-year ROI.",
+      ],
+      url: "https://github.com/mauwia/solarcraft-ai",
+      icon: "☀",
+      color: "",
     },
   ],
   work: [
