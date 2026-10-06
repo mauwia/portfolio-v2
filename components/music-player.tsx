@@ -58,6 +58,8 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
         return;
       }
       removeListeners();
+      // "drift in silence" on the welcome screen: stay quiet.
+      if (e.target instanceof Element && e.target.closest("[data-music-skip]")) return;
       audio.play().then(() => setIsPlaying(true)).catch(() => {});
     }
 

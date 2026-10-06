@@ -12,6 +12,7 @@ import ResumeButton from "@/components/resume-button"
 import MusicPlayer from "@/components/music-player"
 import StarryBackground from "@/components/starry-background"
 import SpaceShips from "@/components/space-ships"
+import SplashOverlay from "@/components/splash-overlay"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,11 +28,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-splash="on" suppressHydrationWarning>
       <body
         className={`${inter.className} bg-white dark:bg-black text-black dark:text-white min-h-screen flex flex-col`}
       >
+        <noscript>
+          <style>{`html[data-splash] #site-root { filter: none !important; transform: none !important; }`}</style>
+        </noscript>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <div id="site-root" className="flex-1 flex flex-col min-h-screen">
           <StarryBackground />
           <SpaceShips />
           <header className="sticky top-0 z-10 w-full bg-white/80 backdrop-blur-sm dark:bg-black/80">
@@ -73,7 +78,9 @@ export default function RootLayout({
           </header>
           <ActiveSectionIndicator />
           <div className="flex-1">{children}</div>
+          </div>
           <MusicPlayer src="/music/background-music.mp3" />
+          <SplashOverlay />
         </ThemeProvider>
       </body>
     </html>
