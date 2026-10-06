@@ -36,7 +36,7 @@ export default function Home() {
           <AnimatedSection delay={200}>
             <section className="space-y-2">
               <p className="text-gray-700 dark:text-gray-300">
-                trying to develop something in cosmos ecosystem.{" "}
+                m.sc. cybersecurity student at btu cottbus–senftenberg, germany. 5+ years building web3 backends before that.{" "}
                 {/* was a{" "} */}
                 {/* <Link
                   href={siteConfig.experience[0].url}
