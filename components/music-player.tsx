@@ -8,13 +8,30 @@ interface MusicPlayerProps {
   src: string;
 }
 
-export default function MusicPlayer({ src }: MusicPlayerProps) {
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+// Only an explicit click on the mute button is remembered. A failed
+// autoplay must never be saved as "muted", or the visitor would never
+// hear the music again on later visits.
+const PREF_KEY = "music-muted-v2";
 
-  // Initialize audio on client-side only
+function readPref(): string | null {
+  try {
+    return localStorage.getItem(PREF_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writePref(muted: boolean) {
+  try {
+    localStorage.setItem(PREF_KEY, String(muted));
+  } catch {}
+}
+
+export default function MusicPlayer({ src }: MusicPlayerProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const buttonRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     const audio = new Audio(src);
     audio.loop = true;
@@ -22,101 +39,67 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
     audio.currentTime = 130;
     audioRef.current = audio;
 
-    // Load user preference from localStorage if available
-    const savedMuteState = localStorage.getItem("music-muted");
-    if (savedMuteState !== null) {
-      const shouldMute = savedMuteState === "true";
-      setIsMuted(shouldMute);
-      audio.muted = shouldMute;
-    } else {
-      // If no saved preference, default to unmuted for autoplay attempt
-      setIsMuted(false);
-      audio.muted = false;
+    // The visitor turned the music off before: respect that.
+    if (readPref() === "true") {
+      return () => {
+        audio.pause();
+        audioRef.current = null;
+      };
     }
 
-    // Attempt autoplay immediately
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          setIsPlaying(true);
-          console.log("Autoplay successful");
-        })
-        .catch((error) => {
-          // Autoplay was prevented by browser
-          console.log("Autoplay prevented:", error);
-          // Since autoplay failed, set to muted
-          setIsMuted(true);
-          audio.muted = true;
-        });
+    const events = ["pointerdown", "keydown", "touchend"] as const;
+    const removeListeners = () =>
+      events.forEach((e) => window.removeEventListener(e, startOnInteraction, true));
+
+    function startOnInteraction(e: Event) {
+      // A click on the mute button itself is handled by toggleMute.
+      if (buttonRef.current && e.target instanceof Node && buttonRef.current.contains(e.target)) {
+        removeListeners();
+        return;
+      }
+      removeListeners();
+      audio.play().then(() => setIsPlaying(true)).catch(() => {});
     }
+
+    // Browsers usually block sound until the visitor interacts with the
+    // page. Try anyway; if blocked, start on the first click, tap or key.
+    audio
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch(() => {
+        events.forEach((e) => window.addEventListener(e, startOnInteraction, true));
+      });
 
     return () => {
+      removeListeners();
       audio.pause();
       audioRef.current = null;
     };
   }, [src]);
 
-  // Handle mute state changes
-  useEffect(() => {
+  const toggleMute = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
-    audio.muted = isMuted;
-
-    // If unmuting and not already playing, try to play when unmuting
-    if (!isMuted && !isPlaying && hasInteracted) {
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((error) => {
-            console.log("Play prevented:", error);
-          });
-      }
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+      writePref(true);
+    } else {
+      audio.play().then(() => setIsPlaying(true)).catch(() => {});
+      writePref(false);
     }
-
-    // Save preference to localStorage
-    localStorage.setItem("music-muted", isMuted.toString());
-  }, [isMuted, isPlaying, hasInteracted]);
-
-  const toggleMute = () => {
-    // Mark that user has interacted with the player
-    setHasInteracted(true);
-
-    // If currently muted and not playing, attempt to play when unmuting
-    if (isMuted && audioRef.current && !isPlaying) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((error) => {
-            console.log("Play prevented:", error);
-          });
-      }
-    }
-
-    setIsMuted(!isMuted);
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div ref={buttonRef} className="fixed bottom-6 right-6 z-50">
       <Button
         variant="outline"
         size="icon"
         className="h-10 w-10 rounded-full shadow-lg bg-background/80 backdrop-blur-sm hover:bg-accent"
         onClick={toggleMute}
-        aria-label={isMuted ? "Unmute music" : "Mute music"}
+        aria-label={isPlaying ? "Mute music" : "Play music"}
       >
-        {isMuted ? (
-          <VolumeX className="h-5 w-5" />
-        ) : (
-          <Volume2 className="h-5 w-5" />
-        )}
+        {isPlaying ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
       </Button>
     </div>
   );
