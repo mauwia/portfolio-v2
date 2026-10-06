@@ -54,7 +54,7 @@ export default function Home() {
                 . */}
               </p>
               <p className="text-gray-700 dark:text-gray-300">
-                wrote docs. shot videos. shipped projects.
+                wrote docs. shipped projects.
               </p>
             </section>
           </AnimatedSection>
