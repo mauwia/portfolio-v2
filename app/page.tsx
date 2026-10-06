@@ -139,9 +139,9 @@ export default function Home() {
           </AnimatedSection>
         </div>
 
-        <div className="flex justify-center md:justify-end">
+        {/* <div className="flex justify-center md:justify-end">
           <AnimatedIdCard />
-        </div>
+        </div> */}
       </section>
 
       <section
