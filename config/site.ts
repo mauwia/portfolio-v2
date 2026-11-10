@@ -2,6 +2,7 @@ export const siteConfig = {
   name: "Muhammad Mavia",
   title: "Hi, I'm Mavia.",
   description: "i build backend systems for products that move money.",
+  githubUsername: "mauwia",
   resume: {
     label: "Resume",
     url: "/Muhammad_Mavia_CV.pdf",
@@ -72,6 +73,8 @@ export const siteConfig = {
       url: "https://medium.com/@mauwia.atif",
     },
   ],
+  // Projects past this count sit behind the "see more" button (currently: everything after Artfi).
+  projectsShownInitially: 6,
   projects: [
     {
       name: "Cooking-Ai-Journal",

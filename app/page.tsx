@@ -5,9 +5,13 @@ import NewsletterForm from "@/components/newsletter-form"
 import ScrollToTop from "@/components/scroll-to-top"
 import AnimatedIdCard from "@/components/animated-id-card"
 import AnimatedSection from "@/components/animated-section"
-import ProjectCard from "@/components/project-card"
+import ProjectList from "@/components/project-list"
+import GithubSkyline from "@/components/github-skyline"
+import { getContributions } from "@/lib/github-contributions"
 
-export default function Home() {
+export default async function Home() {
+  const contributions = await getContributions(siteConfig.githubUsername)
+
   return (
     <div className="min-h-screen">
       <section id="about" className="container mx-auto px-4 py-12 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -151,13 +155,7 @@ export default function Home() {
         <AnimatedSection>
           <h2 className="text-2xl font-bold mb-8 animate-text-gradient">projects</h2>
         </AnimatedSection>
-        <div className="grid grid-cols-1 gap-6">
-          {siteConfig.projects.map((project, index) => (
-            <AnimatedSection key={project.name} delay={index * 100}>
-              <ProjectCard project={project} />
-            </AnimatedSection>
-          ))}
-        </div>
+        <ProjectList projects={siteConfig.projects} initialCount={siteConfig.projectsShownInitially} />
       </section>
 
       <section
@@ -196,6 +194,27 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {contributions && (
+        <section
+          id="commits"
+          className="container mx-auto px-4 py-12 md:py-24 border-t border-gray-100 dark:border-gray-800"
+        >
+          <AnimatedSection>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-8">
+              <h2 className="text-2xl font-bold animate-text-gradient">commits</h2>
+              <Link
+                href={`https://github.com/${siteConfig.githubUsername}`}
+                className="text-sm text-gray-500 dark:text-gray-400 hover:underline flex items-center gap-1 group"
+              >
+                {contributions.total.toLocaleString("en-US")} contributions in the last year{" "}
+                <ArrowUpRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </div>
+          </AnimatedSection>
+          <GithubSkyline days={contributions.days} />
+        </section>
+      )}
 
       {/* <section
         id="newsletter"

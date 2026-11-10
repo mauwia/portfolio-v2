@@ -39,7 +39,7 @@ export default function RootLayout({
           <div id="site-root" className="flex-1 flex flex-col min-h-screen">
           <StarryBackground />
           <SpaceShips />
-          <header className="sticky top-0 z-10 w-full bg-white/80 backdrop-blur-sm dark:bg-black/80">
+          <header className="sticky top-0 z-10 w-full bg-white/50 backdrop-blur-md dark:bg-black/30">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
               <Link href="/" className="font-medium">
                 {siteConfig.name}

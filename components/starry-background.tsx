@@ -74,6 +74,32 @@ export default function StarryBackground() {
         background: isDarkMode ? 'transparent' : 'transparent' 
       }}
     >
+      {/* Faint nebula glow in two opposite corners */}
+      <div
+        className="absolute rounded-full"
+        style={{
+          width: '70vmax',
+          height: '70vmax',
+          left: '-25vmax',
+          top: '-30vmax',
+          background:
+            'radial-gradient(closest-side, rgba(99,102,241,0.20), rgba(99,102,241,0.07) 55%, transparent)',
+          animation: 'nebula-drift 40s ease-in-out infinite alternate',
+        }}
+      />
+      <div
+        className="absolute rounded-full"
+        style={{
+          width: '65vmax',
+          height: '65vmax',
+          right: '-25vmax',
+          bottom: '-30vmax',
+          background:
+            'radial-gradient(closest-side, rgba(168,85,247,0.16), rgba(168,85,247,0.05) 55%, transparent)',
+          animation: 'nebula-drift 55s ease-in-out infinite alternate-reverse',
+        }}
+      />
+
       {/* Regular stars only */}
       {stars.map(star => (
         <div
