@@ -8,10 +8,9 @@ interface MusicPlayerProps {
   src: string;
 }
 
-// Only an explicit click on the mute button is remembered. A failed
-// autoplay must never be saved as "muted", or the visitor would never
-// hear the music again on later visits.
-const PREF_KEY = "music-muted-v2";
+// Music is off by default. Only a visitor who turned it on with the button
+// gets it back on later visits; turning it off again clears that.
+const PREF_KEY = "music-on-v1";
 
 function readPref(): string | null {
   try {
@@ -21,9 +20,9 @@ function readPref(): string | null {
   }
 }
 
-function writePref(muted: boolean) {
+function writePref(on: boolean) {
   try {
-    localStorage.setItem(PREF_KEY, String(muted));
+    localStorage.setItem(PREF_KEY, String(on));
   } catch {}
 }
 
@@ -39,8 +38,8 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
     audio.currentTime = 130;
     audioRef.current = audio;
 
-    // The visitor turned the music off before: respect that.
-    if (readPref() === "true") {
+    // Off unless the visitor asked for music on an earlier visit.
+    if (readPref() !== "true") {
       return () => {
         audio.pause();
         audioRef.current = null;
@@ -85,10 +84,10 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
-      writePref(true);
+      writePref(false);
     } else {
       audio.play().then(() => setIsPlaying(true)).catch(() => {});
-      writePref(false);
+      writePref(true);
     }
   };
 

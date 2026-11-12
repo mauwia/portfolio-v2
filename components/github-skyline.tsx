@@ -52,6 +52,10 @@ const LIT_SHARE = 38 // percent of windows with the lights on
 const windowSeed = (bar: number, wall: number, row: number, col: number) =>
   (Math.imul(bar + 1, 73856093) ^ Math.imul(wall + 1, 19349663) ^ Math.imul(row + 1, 83492791) ^ Math.imul(col + 1, 2654435761)) >>> 0
 
+// Below Tailwind's `sm` breakpoint, show this many of the most recent weeks.
+const NARROW_QUERY = "(max-width: 639px)"
+const NARROW_WEEKS = 22
+
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -94,35 +98,52 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
     if (!wrap || !canvas || !ctx || days.length === 0) return
 
     // ---- layout -----------------------------------------------------------
-    const offset = new Date(`${days[0].date}T00:00:00Z`).getUTCDay()
-    const weeks = Math.ceil((days.length + offset) / 7)
-    const max = Math.max(1, ...days.map((d) => d.count))
-    const bars = days.map((day, i) => {
-      const week = Math.floor((i + offset) / 7)
-      return {
-        day,
-        week,
-        x: week - (weeks - 1) / 2,
-        z: ((i + offset) % 7) - 3,
-        // Compress the range a little so one huge day doesn't flatten the rest.
-        h: day.count === 0 ? 0 : 0.4 + (MAX_H - 0.4) * Math.pow(day.count / max, 0.6),
-      }
-    })
-    const monthLabels: { x: number; label: string }[] = []
-    let lastMonth = -1
-    let lastLabelWeek = -99
-    for (const bar of bars) {
-      const month = Number(bar.day.date.slice(5, 7)) - 1
-      if (month !== lastMonth) {
-        if (bar.week - lastLabelWeek >= 3) {
-          monthLabels.push({ x: bar.x, label: MONTHS[month] })
-          lastLabelWeek = bar.week
-        }
-        lastMonth = month
-      }
-    }
+    // A full year is 53 weeks wide: fine on a desktop, unreadably small on a
+    // phone. Narrow screens show only the most recent weeks, at a usable size.
+    const narrow = window.matchMedia(NARROW_QUERY)
+    type Bar = { day: ContributionDay; week: number; x: number; z: number; h: number }
+    let weeks = 0
+    let bars: Bar[] = []
+    let monthLabels: { x: number; label: string }[] = []
+    let order: { index: number; depth: number }[] = []
 
-    const order = bars.flatMap((bar, index) => (bar.day.count === 0 ? [] : [{ index, depth: 0 }]))
+    function layout() {
+      const fullOffset = new Date(`${days[0].date}T00:00:00Z`).getUTCDay()
+      const fullWeeks = Math.ceil((days.length + fullOffset) / 7)
+      // Cut on a week boundary, so the first column shown is a whole week.
+      const firstWeek = narrow.matches ? Math.max(0, fullWeeks - NARROW_WEEKS) : 0
+      const shown = days.slice(Math.max(0, firstWeek * 7 - fullOffset))
+
+      const offset = new Date(`${shown[0].date}T00:00:00Z`).getUTCDay()
+      weeks = Math.ceil((shown.length + offset) / 7)
+      const max = Math.max(1, ...shown.map((d) => d.count))
+      bars = shown.map((day, i) => {
+        const week = Math.floor((i + offset) / 7)
+        return {
+          day,
+          week,
+          x: week - (weeks - 1) / 2,
+          z: ((i + offset) % 7) - 3,
+          // Compress the range a little so one huge day doesn't flatten the rest.
+          h: day.count === 0 ? 0 : 0.4 + (MAX_H - 0.4) * Math.pow(day.count / max, 0.6),
+        }
+      })
+      monthLabels = []
+      let lastMonth = -1
+      let lastLabelWeek = -99
+      for (const bar of bars) {
+        const month = Number(bar.day.date.slice(5, 7)) - 1
+        if (month !== lastMonth) {
+          if (bar.week - lastLabelWeek >= 3) {
+            monthLabels.push({ x: bar.x, label: MONTHS[month] })
+            lastLabelWeek = bar.week
+          }
+          lastMonth = month
+        }
+      }
+      order = bars.flatMap((bar, index) => (bar.day.count === 0 ? [] : [{ index, depth: 0 }]))
+    }
+    layout()
 
     // ---- state ------------------------------------------------------------
     let yaw = START_YAW
@@ -293,9 +314,15 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
       ctx!.font = "10px ui-sans-serif, system-ui, sans-serif"
       ctx!.textAlign = "center"
       ctx!.textBaseline = "middle"
+      let lastX = Infinity
+      let lastY = Infinity
       for (const { x, label } of monthLabels) {
         const [lx, ly] = project(x, 0, edge)
+        // Seen end-on the months bunch up: drop any that would sit on the last one.
+        if (Math.abs(lx - lastX) < 26 && Math.abs(ly - lastY) < 12) continue
         ctx!.fillText(label, lx, ly + 6)
+        lastX = lx
+        lastY = ly
       }
       ctx!.globalAlpha = 1
 
@@ -316,7 +343,7 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
 
     const resize = () => {
       width = wrap.clientWidth
-      height = Math.max(220, Math.round(width * 0.5))
+      height = Math.max(250, Math.round(width * 0.5))
       const dpr = Math.min(2, window.devicePixelRatio || 1)
       readTheme()
       canvas.width = Math.round(width * dpr)
@@ -375,6 +402,17 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
     canvas.addEventListener("pointerdown", onDown)
     canvas.addEventListener("pointerleave", onLeave)
 
+    // Crossing the phone/desktop breakpoint changes how many weeks are shown.
+    const onBreakpoint = () => {
+      layout()
+      hovered = -1
+      paused = false
+      drawn = []
+      setTip(null)
+      requestDraw()
+    }
+    narrow.addEventListener("change", onBreakpoint)
+
     const resizeObserver = new ResizeObserver(resize)
     resizeObserver.observe(wrap)
     resize()
@@ -397,6 +435,7 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
       resizeObserver.disconnect()
       viewObserver.disconnect()
       themeObserver.disconnect()
+      narrow.removeEventListener("change", onBreakpoint)
       canvas.removeEventListener("pointermove", onMove)
       canvas.removeEventListener("pointerdown", onDown)
       canvas.removeEventListener("pointerleave", onLeave)
@@ -427,6 +466,8 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
           </div>
         )}
       </div>
+      {/* Matches NARROW_QUERY: phones only get the most recent weeks. */}
+      <p className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400 sm:hidden">last 5 months</p>
     </div>
   )
 }
