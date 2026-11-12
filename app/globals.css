@@ -313,6 +313,65 @@ a.underline:hover::after {
 */
 
 /* ---------- welcome screen ---------- */
+/* Always keep room for the scrollbar, so the page doesn't jump sideways when
+   the welcome screen locks scrolling and later unlocks it. */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Slim scrollbar in the site's indigo-to-purple, with no visible track. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  /* The transparent border insets the thumb, so it floats inside the gutter. */
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(129, 140, 248, 0.75), rgba(168, 85, 247, 0.75)) padding-box;
+}
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
+  border-width: 2px;
+  background: linear-gradient(180deg, #a5b4fc, #c084fc) padding-box;
+}
+/* Firefox has no scrollbar pseudo-elements: closest equivalent. */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(129, 140, 248, 0.75) transparent;
+  }
+}
+
+/* Lock scrolling from the very first paint (before React loads), instead of
+   letting the scrollbar show for a moment on refresh and then vanish. */
+html[data-splash="on"],
+html[data-splash="leaving"] {
+  overflow: hidden;
+  background: #000;
+}
+
+/* While the site sits under the welcome screen's filter, a backdrop-filter on
+   the header paints the glow behind it a second time, so the bar looked too
+   bright and then snapped dark the instant the screen finished. Switch the
+   glass effect off until then and let it fade in afterwards. */
+#site-root > header {
+  transition:
+    background-color 0.9s ease,
+    backdrop-filter 0.9s ease,
+    -webkit-backdrop-filter 0.9s ease;
+}
+html[data-splash="on"] #site-root > header,
+html[data-splash="leaving"] #site-root > header {
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 /* The site behind the welcome screen: out of focus, dim, slightly zoomed.
    On "leaving" it pulls into focus like a camera lens. */
 html[data-splash="on"] #site-root,

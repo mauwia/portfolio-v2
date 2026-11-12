@@ -35,7 +35,7 @@ export default function MusicPlayer({ src }: MusicPlayerProps) {
   useEffect(() => {
     const audio = new Audio(src);
     audio.loop = true;
-    audio.volume = 0.4;
+    audio.volume = 0.2;
     audio.currentTime = 130;
     audioRef.current = audio;
 

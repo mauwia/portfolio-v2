@@ -15,12 +15,19 @@ const PITCH = 0.4 // how far the camera looks down
 const SPIN = (Math.PI * 2) / 21000 // radians per ms: one full turn in 21s
 
 type RGB = [number, number, number]
-// Base colour per GitHub intensity level (1-4): busier days are brighter.
-const BASE: RGB[] = [
+// Base colour per GitHub intensity level (1-4). On a dark page busier days
+// are brighter; on a light page they are deeper, so they stand out either way.
+const BASE_DARK: RGB[] = [
   [67, 56, 202],
   [88, 84, 236],
   [118, 122, 246],
   [165, 176, 252],
+]
+const BASE_LIGHT: RGB[] = [
+  [190, 200, 253],
+  [150, 163, 250],
+  [104, 108, 242],
+  [72, 62, 214],
 ]
 // Fixed light: each wall direction gets its own brightness, so the shading
 // shifts as the model turns.
@@ -30,6 +37,21 @@ const WALLS = [
   { nx: 0, nz: 1, light: 0.72 },
   { nx: 0, nz: -1, light: 0.5 },
 ]
+// Windows: two per floor on every wall. Positions are fractions across the
+// wall; heights are in world units.
+const WINDOW_COLS = [
+  [0.16, 0.42],
+  [0.58, 0.84],
+]
+const FLOOR_H = 0.5
+const WINDOW_H = 0.27
+const WINDOW_BASE = 0.2 // height of the first row's sill
+const LIT_SHARE = 38 // percent of windows with the lights on
+
+// Stable pseudo-random 0-99 per window, so the same ones stay lit every frame.
+const windowSeed = (bar: number, wall: number, row: number, col: number) =>
+  (Math.imul(bar + 1, 73856093) ^ Math.imul(wall + 1, 19349663) ^ Math.imul(row + 1, 83492791) ^ Math.imul(col + 1, 2654435761)) >>> 0
+
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -110,7 +132,8 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
     let visible = false // only spin while on screen
     let paused = false // the mouse is on a building, so hold still for the tooltip
     let pointer: Point | null = null // mouse position over the canvas, if any
-    let ink = "" // the page's text colour, for tiles and labels
+    let ink = "" // the page's text colour, for labels
+    let dark = true // which theme the page is in
     let lastFrame = 0
     let hovered = -1
     let tipTimer = 0
@@ -181,14 +204,12 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
         ctx!.lineTo(d[0], d[1])
         ctx!.closePath()
       }
-      ctx!.fillStyle = ink
-      ctx!.strokeStyle = ink
+      // White tiles on dark; on light, indigo ones strong enough to read as ground.
+      ctx!.fillStyle = dark ? "rgba(255,255,255,0.05)" : "rgba(99,102,241,0.10)"
+      ctx!.strokeStyle = dark ? "rgba(255,255,255,0.16)" : "rgba(99,102,241,0.30)"
       ctx!.lineWidth = 0.5
-      ctx!.globalAlpha = 0.05
       ctx!.fill()
-      ctx!.globalAlpha = 0.16
       ctx!.stroke()
-      ctx!.globalAlpha = 1
 
       // Buildings, by painter's algorithm: farthest ground cell first.
       for (const entry of order) entry.depth = -bars[entry.index].x * sinY + bars[entry.index].z * cosY
@@ -196,7 +217,12 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
 
       drawn = []
       ctx!.lineJoin = "round"
-      ctx!.strokeStyle = "rgba(11,11,26,0.5)"
+      const palette = dark ? BASE_DARK : BASE_LIGHT
+      const rise = scale * cosP // screen pixels per world unit of height
+      // Night: warm lamps and dark panes. Day: bright reflections and tinted glass.
+      const windowLit = dark ? "rgba(253,224,138,0.92)" : "rgba(255,255,255,0.8)"
+      const windowDark = dark ? "rgba(8,8,32,0.38)" : "rgba(49,46,129,0.2)"
+      ctx!.strokeStyle = dark ? "rgba(11,11,26,0.5)" : "rgba(255,255,255,0.75)"
       ctx!.lineWidth = 0.6
       for (const { index } of order) {
         const bar = bars[index]
@@ -205,11 +231,15 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
         const x0 = bar.x - half, x1 = bar.x + half, z0 = bar.z - half, z1 = bar.z + half
         const roof = [project(x0, h, z0), project(x1, h, z0), project(x1, h, z1), project(x0, h, z1)]
         const faces: Point[][] = [roof]
-        const base = BASE[Math.min(4, Math.max(1, bar.day.level)) - 1]
-        const glow = index === hovered ? 0.35 : 0
+        const base = palette[Math.min(4, Math.max(1, bar.day.level)) - 1]
+        // The hovered building lights up on dark and deepens on light.
+        const isHovered = index === hovered
+        const glow = isHovered && dark ? 0.35 : 0
+        const dim = isHovered && !dark ? 0.72 : 1
 
         if (h > 0.001) {
-          for (const wall of WALLS) {
+          for (let w = 0; w < WALLS.length; w++) {
+            const wall = WALLS[w]
             // Only walls turned towards the viewer are visible.
             if (-wall.nx * sinY + wall.nz * cosY <= 0) continue
             const [ax, az, bx, bz] = wall.nx
@@ -217,13 +247,37 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
               : [x0, wall.nz > 0 ? z1 : z0, x1, wall.nz > 0 ? z1 : z0]
             const face = [project(ax, 0, az), project(bx, 0, bz), project(bx, h, bz), project(ax, h, az)]
             quad(face)
-            ctx!.fillStyle = rgb(base, wall.light, glow)
+            ctx!.fillStyle = rgb(base, (dark ? wall.light : 0.55 + wall.light * 0.45) * dim, glow)
             ctx!.fill()
             faces.push(face)
+
+            // Windows, as two paths (lit and unlit) so each wall costs two fills.
+            const [a, b] = face
+            const ex = b[0] - a[0]
+            const ey = b[1] - a[1]
+            const rows = Math.floor((h - WINDOW_BASE - 0.12) / FLOOR_H + (FLOOR_H - WINDOW_H) / FLOOR_H)
+            for (const lit of [false, true]) {
+              ctx!.beginPath()
+              for (let row = 0; row < rows; row++) {
+                const bottom = (WINDOW_BASE + row * FLOOR_H) * rise
+                const top = bottom + WINDOW_H * rise
+                for (let col = 0; col < WINDOW_COLS.length; col++) {
+                  if ((windowSeed(index, w, row, col) % 100 < LIT_SHARE) !== lit) continue
+                  const [u0, u1] = WINDOW_COLS[col]
+                  ctx!.moveTo(a[0] + ex * u0, a[1] + ey * u0 - bottom)
+                  ctx!.lineTo(a[0] + ex * u1, a[1] + ey * u1 - bottom)
+                  ctx!.lineTo(a[0] + ex * u1, a[1] + ey * u1 - top)
+                  ctx!.lineTo(a[0] + ex * u0, a[1] + ey * u0 - top)
+                  ctx!.closePath()
+                }
+              }
+              ctx!.fillStyle = lit ? windowLit : windowDark
+              ctx!.fill()
+            }
           }
         }
         quad(roof)
-        ctx!.fillStyle = rgb(base, 1, 0.28 + glow)
+        ctx!.fillStyle = rgb(base, dim, (dark ? 0.28 : 0.3) + glow)
         ctx!.fill()
         ctx!.stroke()
         drawn.push({ index, faces })
@@ -249,11 +303,22 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
       if (spinning || (riseStart !== null && elapsed < RISE_MS + weeks * STAGGER_MS)) requestDraw()
     }
 
+    const readTheme = () => {
+      dark = document.documentElement.classList.contains("dark")
+      ink = getComputedStyle(wrap).color
+    }
+    // The theme toggle flips a class on <html>: repaint in the new colours.
+    const themeObserver = new MutationObserver(() => {
+      readTheme()
+      requestDraw()
+    })
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
+
     const resize = () => {
       width = wrap.clientWidth
       height = Math.max(220, Math.round(width * 0.5))
       const dpr = Math.min(2, window.devicePixelRatio || 1)
-      ink = getComputedStyle(wrap).color
+      readTheme()
       canvas.width = Math.round(width * dpr)
       canvas.height = Math.round(height * dpr)
       canvas.style.height = `${height}px`
@@ -331,6 +396,7 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
       window.clearTimeout(tipTimer)
       resizeObserver.disconnect()
       viewObserver.disconnect()
+      themeObserver.disconnect()
       canvas.removeEventListener("pointermove", onMove)
       canvas.removeEventListener("pointerdown", onDown)
       canvas.removeEventListener("pointerleave", onLeave)

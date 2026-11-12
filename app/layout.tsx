@@ -39,7 +39,7 @@ export default function RootLayout({
           <div id="site-root" className="flex-1 flex flex-col min-h-screen">
           <StarryBackground />
           <SpaceShips />
-          <header className="sticky top-0 z-10 w-full bg-white/50 backdrop-blur-md dark:bg-black/30">
+          <header className="sticky top-0 z-10 w-full bg-white/30 backdrop-blur-lg dark:bg-black/10">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
               <Link href="/" className="font-medium">
                 {siteConfig.name}
@@ -70,7 +70,7 @@ export default function RootLayout({
                 </nav>
                 <div className="flex items-center gap-3">
                   <ResumeButton />
-                  {/* <ThemeToggle /> */}
+                  <ThemeToggle />
                   <MobileNav />
                 </div>
               </div>

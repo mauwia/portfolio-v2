@@ -112,7 +112,7 @@ export default function SpaceShips() {
     <div 
       className="fixed inset-0 pointer-events-none overflow-hidden -z-10"
       style={{ 
-        opacity: isDarkMode ? 1 : 0.3
+        opacity: isDarkMode ? 1 : 0.7
       }}
     >
       {/* Spaceships */}
@@ -138,43 +138,43 @@ export default function SpaceShips() {
           {ship.type === 'rocket' && (
             <svg width={ship.size} height={ship.size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2C9 7 7 9 2 12C7 15 9 17 12 22C15 17 17 15 22 12C17 9 15 7 12 2Z" 
-                stroke={isDarkMode ? "white" : "black"} 
+                stroke={isDarkMode ? "white" : "#6366f1"} 
                 strokeWidth="1.5" 
-                fill={isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} />
-              <path d="M12 22V18" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M2 12H6" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M18 12H22" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M12 6V2" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
+                fill={isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(99,102,241,0.12)"} />
+              <path d="M12 22V18" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M2 12H6" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M18 12H22" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M12 6V2" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
             </svg>
           )}
           
           {ship.type === 'ufo' && (
             <svg width={ship.size} height={ship.size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <ellipse cx="12" cy="12" rx="8" ry="3" 
-                stroke={isDarkMode ? "white" : "black"} 
-                fill={isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} 
+                stroke={isDarkMode ? "white" : "#6366f1"} 
+                fill={isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(99,102,241,0.12)"} 
                 strokeWidth="1.5" />
-              <path d="M12 9V6" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M7 10.5L5 8" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M17 10.5L19 8" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M8 12L8 15" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M12 12L12 15" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M16 12L16 15" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
+              <path d="M12 9V6" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M7 10.5L5 8" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M17 10.5L19 8" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M8 12L8 15" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M12 12L12 15" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M16 12L16 15" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
             </svg>
           )}
           
           {ship.type === 'satellite' && (
             <svg width={ship.size} height={ship.size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="6" y="9" width="12" height="6" 
-                stroke={isDarkMode ? "white" : "black"} 
-                fill={isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} 
+                stroke={isDarkMode ? "white" : "#6366f1"} 
+                fill={isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(99,102,241,0.12)"} 
                 strokeWidth="1.5" />
-              <path d="M2 12H4" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M20 12H22" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M4 7L6 9" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M18 9L20 7" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M4 17L6 15" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
-              <path d="M18 15L20 17" stroke={isDarkMode ? "white" : "black"} strokeWidth="1.5" />
+              <path d="M2 12H4" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M20 12H22" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M4 7L6 9" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M18 9L20 7" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M4 17L6 15" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
+              <path d="M18 15L20 17" stroke={isDarkMode ? "white" : "#6366f1"} strokeWidth="1.5" />
             </svg>
           )}
         </div>
