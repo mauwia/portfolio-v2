@@ -48,9 +48,21 @@ const WINDOW_H = 0.27
 const WINDOW_BASE = 0.2 // height of the first row's sill
 const LIT_SHARE = 38 // percent of windows with the lights on
 
-// Stable pseudo-random 0-99 per window, so the same ones stay lit every frame.
+// A stable pseudo-random number per window.
 const windowSeed = (bar: number, wall: number, row: number, col: number) =>
   (Math.imul(bar + 1, 73856093) ^ Math.imul(wall + 1, 19349663) ^ Math.imul(row + 1, 83492791) ^ Math.imul(col + 1, 2654435761)) >>> 0
+
+// Whether a window's light is on right now. Each window re-rolls on its own
+// clock, every 10 to 30 seconds and out of step with the others, so a few
+// dozen lights across the city go on or off each second.
+const LIGHT_MIN_MS = 10_000
+const LIGHT_SPREAD_MS = 20_000
+function windowLitAt(seed: number, now: number) {
+  const period = LIGHT_MIN_MS + (seed % LIGHT_SPREAD_MS)
+  const turn = Math.floor((now + ((seed >>> 7) % period)) / period)
+  const roll = Math.imul(seed ^ Math.imul(turn + 1, 40503), 2654435761) >>> 16
+  return roll % 100 < LIT_SHARE
+}
 
 // Below Tailwind's `sm` breakpoint, show this many of the most recent weeks.
 const NARROW_QUERY = "(max-width: 639px)"
@@ -283,7 +295,7 @@ export default function GithubSkyline({ days }: { days: ContributionDay[] }) {
                 const bottom = (WINDOW_BASE + row * FLOOR_H) * rise
                 const top = bottom + WINDOW_H * rise
                 for (let col = 0; col < WINDOW_COLS.length; col++) {
-                  if ((windowSeed(index, w, row, col) % 100 < LIT_SHARE) !== lit) continue
+                  if (windowLitAt(windowSeed(index, w, row, col), now) !== lit) continue
                   const [u0, u1] = WINDOW_COLS[col]
                   ctx!.moveTo(a[0] + ex * u0, a[1] + ey * u0 - bottom)
                   ctx!.lineTo(a[0] + ex * u1, a[1] + ey * u1 - bottom)
